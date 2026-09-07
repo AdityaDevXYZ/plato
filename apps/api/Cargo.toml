@@ -1,0 +1,39 @@
+[package]
+name = "api"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+uuid.workspace = true
+tower-http = { workspace = true, features = ["cors", "trace"] }
+metrics.workspace = true
+tracing-subscriber.workspace = true
+axum.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+sqlx.workspace = true
+types = { path = "../../crates/types" }
+identity = { path = "../../crates/identity" }
+organization = { path = "../../crates/organization" }
+project = { path = "../../crates/project" }
+mission = { path = "../../crates/mission" }
+release = { path = "../../crates/release" }
+common = { path = "../../crates/common" }
+plato_config = { path = "../../crates/config" }
+telemetry = { path = "../../crates/telemetry" }
+storage = { path = "../../crates/storage" }
+application = { path = "../../crates/application" }
+assurance = { path = "../../crates/assurance" }
+readiness = { path = "../../crates/readiness" }
+deployment = { path = "../../crates/deployment" }
+twin = { path = "../../crates/twin" }
+orbit = { path = "../../crates/orbit" }
+planning = { path = "../../crates/planning" }
+resource = { path = "../../crates/resource" }
+risk = { path = "../../crates/risk" }
+coordination = { path = "../../crates/coordination" }
+analytics = { path = "../../crates/analytics" }
+eventbus = { path = "../../crates/eventbus" }

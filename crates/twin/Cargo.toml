@@ -1,0 +1,13 @@
+[package]
+name = "twin"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+types = { path = "../types" }
+eventbus = { path = "../eventbus" }
+uuid.workspace = true
+time.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+async-trait.workspace = true

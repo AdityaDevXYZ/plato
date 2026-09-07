@@ -1,0 +1,38 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: plato-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/websocket-services: "plato-backend-svc"
+spec:
+  tls:
+    - hosts:
+        - app.plato.aero
+        - api.plato.aero
+      secretName: plato-tls-secret
+  rules:
+    - host: app.plato.aero
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: plato-frontend-svc
+                port:
+                  number: 80
+    - host: api.plato.aero
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: plato-backend-svc
+                port:
+                  number: 80

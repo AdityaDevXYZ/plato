@@ -1,0 +1,33 @@
+[package]
+name = "storage"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+sqlx.workspace = true
+uuid.workspace = true
+time.workspace = true
+tokio.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+async-trait.workspace = true
+types = { path = "../types" }
+identity = { path = "../identity" }
+organization = { path = "../organization" }
+project = { path = "../project" }
+mission = { path = "../mission" }
+release = { path = "../release" }
+assurance = { path = "../assurance" }
+readiness = { path = "../readiness" }
+deployment = { path = "../deployment" }
+twin = { path = "../twin" }
+orbit = { path = "../orbit" }
+planning = { path = "../planning" }
+resource = { path = "../resource" }
+risk = { path = "../risk" }
+coordination = { path = "../coordination" }
+analytics = { path = "../analytics" }
+serde.workspace = true
+serde_json.workspace = true
+eventbus = { path = "../eventbus" }
+application = { path = "../application" }

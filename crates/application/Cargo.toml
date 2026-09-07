@@ -1,0 +1,32 @@
+[package]
+name = "application"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+metrics.workspace = true
+tracing.workspace = true
+types = { path = "../types" }
+identity = { path = "../identity" }
+organization = { path = "../organization" }
+project = { path = "../project" }
+mission = { path = "../mission" }
+release = { path = "../release" }
+thiserror.workspace = true
+eventbus = { path = "../eventbus" }
+uuid.workspace = true
+jsonwebtoken.workspace = true
+serde.workspace = true
+time.workspace = true
+
+assurance = { path = "../assurance" }
+readiness = { path = "../readiness" }
+deployment = { path = "../deployment" }
+twin = { path = "../twin" }
+orbit = { path = "../orbit" }
+planning = { path = "../planning" }
+resource = { path = "../resource" }
+risk = { path = "../risk" }
+coordination = { path = "../coordination" }
+analytics = { path = "../analytics" }
+async-trait.workspace = true

@@ -1,0 +1,11 @@
+[package]
+name = "eventbus"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+uuid.workspace = true
+time.workspace = true
+thiserror.workspace = true
+serde = { workspace = true }
+

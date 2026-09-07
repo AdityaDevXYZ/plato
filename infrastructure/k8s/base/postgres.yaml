@@ -1,0 +1,44 @@
+
+# Abstract definition for PostgreSQL (Assumes External Cloud SQL or RDS in Prod)
+# Development representation using StatefulSet
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: plato-db
+spec:
+  serviceName: "plato-db-svc"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plato-db
+  template:
+    metadata:
+      labels:
+        app: plato-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        env:
+        - name: POSTGRES_USER
+          value: "plato_admin"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: plato-db-secrets
+              key: password
+        - name: POSTGRES_DB
+          value: "plato_prod"
+        ports:
+        - containerPort: 5432
+          name: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plato-db-svc
+spec:
+  ports:
+  - port: 5432
+  selector:
+    app: plato-db

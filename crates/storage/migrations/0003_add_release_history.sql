@@ -1,0 +1,1 @@
+ALTER TABLE releases ADD COLUMN history JSONB NOT NULL DEFAULT '[]'::jsonb;

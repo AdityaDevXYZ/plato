@@ -1,0 +1,39 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plato-nats
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: plato-nats
+  template:
+    metadata:
+      labels:
+        app: plato-nats
+    spec:
+      containers:
+      - name: nats
+        image: nats:2.10-alpine
+        args: ["--cluster", "nats://0.0.0.0:6222", "--routes", "nats-route://plato-nats-svc:6222"]
+        ports:
+        - containerPort: 4222
+          name: client
+        - containerPort: 6222
+          name: cluster
+        - containerPort: 8222
+          name: monitor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plato-nats-svc
+spec:
+  ports:
+  - name: client
+    port: 4222
+  - name: cluster
+    port: 6222
+  selector:
+    app: plato-nats

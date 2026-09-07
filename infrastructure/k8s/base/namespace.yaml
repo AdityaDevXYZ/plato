@@ -1,0 +1,7 @@
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: plato-system
+  labels:
+    app.kubernetes.io/name: plato

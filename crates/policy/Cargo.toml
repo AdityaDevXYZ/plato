@@ -1,0 +1,8 @@
+[package]
+name = "policy"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+types = { path = "../types" }
+thiserror.workspace = true

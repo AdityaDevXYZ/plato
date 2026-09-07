@@ -1,0 +1,13 @@
+[package]
+name = "release"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+types = { path = "../types" }
+thiserror.workspace = true
+async-trait.workspace = true
+eventbus = { path = "../eventbus" }
+serde = { workspace = true }
+time = { workspace = true }
+uuid = { workspace = true }

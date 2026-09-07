@@ -1,0 +1,84 @@
+use crate::error::ApplicationError;
+use twin::{
+    model::{Satellite, PartialSatelliteTelemetry},
+    repository::TwinRepository,
+    events::*,
+};
+use types::MissionId;
+use std::sync::Arc;
+use eventbus::{EventPublisher, EventMessage};
+use uuid::Uuid;
+
+pub struct TwinQueryService {
+    repo: Arc<dyn TwinRepository>,
+}
+
+impl TwinQueryService {
+    pub fn new(repo: Arc<dyn TwinRepository>) -> Self {
+        Self { repo }
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn get_satellite(&self, id: Uuid) -> Result<Satellite, ApplicationError> {
+        self.repo.get_satellite(id).await
+            .map_err(|e| ApplicationError::Repository(e.to_string()))?
+            .ok_or_else(|| ApplicationError::NotFound("Satellite not found".into()))
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn get_mission_assets(&self, mission_id: MissionId) -> Result<Vec<Satellite>, ApplicationError> {
+        self.repo.get_mission_assets(mission_id).await.map_err(|e| ApplicationError::Repository(e.to_string()))
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn get_all_satellites(&self) -> Result<Vec<Satellite>, ApplicationError> {
+        self.repo.get_all_satellites().await.map_err(|e| ApplicationError::Repository(e.to_string()))
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn get_unhealthy_satellites(&self) -> Result<Vec<Satellite>, ApplicationError> {
+        self.repo.get_unhealthy_satellites(50).await.map_err(|e| ApplicationError::Repository(e.to_string()))
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn get_online_satellites(&self) -> Result<Vec<Satellite>, ApplicationError> {
+        self.repo.get_online_satellites().await.map_err(|e| ApplicationError::Repository(e.to_string()))
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn get_deployable_satellites(&self) -> Result<Vec<Satellite>, ApplicationError> {
+        self.repo.get_deployable_satellites().await.map_err(|e| ApplicationError::Repository(e.to_string()))
+    }
+}
+
+pub struct TwinUpdateService {
+    repo: Arc<dyn TwinRepository>,
+    event_publisher: Arc<dyn EventPublisher>,
+}
+
+impl TwinUpdateService {
+    pub fn new(repo: Arc<dyn TwinRepository>, event_publisher: Arc<dyn EventPublisher>) -> Self {
+        Self { repo, event_publisher }
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub async fn update_telemetry(&self, id: Uuid, telemetry: PartialSatelliteTelemetry) -> Result<Satellite, ApplicationError> {
+        let mut sat = self.repo.get_satellite(id).await
+            .map_err(|e| ApplicationError::Repository(e.to_string()))?
+            .ok_or_else(|| ApplicationError::NotFound("Satellite not found".into()))?;
+        
+        let old_health = sat.health_score;
+        sat.apply_partial(telemetry);
+        
+        self.repo.save_satellite(&sat).await.map_err(|e| ApplicationError::Repository(e.to_string()))?;
+        
+        let mut events = vec![EventMessage::new(Box::new(TwinUpdated { entity_id: id, version: sat.version }), Uuid::new_v4(), "plato.twin")];
+        if sat.health_score != old_health {
+            events.push(EventMessage::new(Box::new(SatelliteHealthChanged { entity_id: id, new_score: sat.health_score }), Uuid::new_v4(), "plato.twin"));
+        }
+        
+        let _ = self.event_publisher.publish(events);
+        
+        Ok(sat)
+    }
+}

@@ -1,0 +1,45 @@
+
+name: PLATO Continuous Deployment
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Login to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/backend.Dockerfile
+          push: true
+          tags: ghcr.io/plato-aero/plato-backend:${{ github.ref_name }}
+          
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/frontend.Dockerfile
+          push: true
+          tags: ghcr.io/plato-aero/plato-frontend:${{ github.ref_name }}
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger ArgoCD Sync
+        run: |
+          echo "Triggering Kubernetes sync for tag ${{ github.ref_name }}"
+          # Call to ArgoCD webhook or update Kustomize image tags
